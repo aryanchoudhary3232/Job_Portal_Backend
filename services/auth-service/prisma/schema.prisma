@@ -1,0 +1,59 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  STUDENT
+  RECRUITER
+  STAFF
+}
+
+model User {
+  id               String            @id @default(uuid())
+  fullName         String
+  email            String            @unique
+  password         String
+  role             Role
+  isEmailVerified   Boolean  @default(false)
+  emailVerifyToken  String?
+  emailVerifyExpiry DateTime?
+  createdAt        DateTime          @default(now())
+  studentProfile   StudentProfile?
+  recruiterProfile RecruiterProfile?
+
+  @@map("users")
+}
+
+model StudentProfile {
+  id              String @id @default(uuid())
+  userId          String @unique
+  user            User   @relation(fields: [userId], references: [id])
+  collegeName     String
+  degree          String
+  resume          String
+  cgpa            Int
+}
+
+enum ApprovalStatus {
+  PENDING
+  REJECTED
+  ACCEPTED
+}
+model RecruiterProfile {
+  id              String         @id @default(uuid())
+  userId          String         @unique
+  user            User           @relation(fields: [userId], references: [id])
+  companyName     String
+  approvalStatus  ApprovalStatus @default(PENDING)
+  approvedBy      String?
+  approvedAt      DateTime?
+  rejectionReason String?
+  document        String
+
+  @@map("recruiter_profiles")
+}

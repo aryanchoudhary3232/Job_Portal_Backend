@@ -1,0 +1,24 @@
+{
+  "name": "jobportal-backend",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start:gateway": "node api-gateway/src/server.js",
+    "start:auth": "node services/auth-service/src/server.js",
+    "start:users": "node services/user-service/src/server.js",
+    "start:jobs": "node services/job-service/src/server.js",
+    "start:applications": "node services/application-service/src/server.js",
+    "start:admin": "node services/admin-service/src/server.js",
+    "lint:loc": "node scripts/check-loc.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.0",
+    "zod": "^4.1.12"
+  }
+}

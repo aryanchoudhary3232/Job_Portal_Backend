@@ -1,0 +1,10 @@
+admin-service running on 4005
+admin-service GET /health 200 1.659 ms
+admin-service GET /admin/overview 200 1.621 ms
+admin-service GET /admin/overview 200 0.931 ms
+admin-service GET /admin/overview 200 0.603 ms
+admin-service GET /admin/analytics 200 0.863 ms
+admin-service GET /admin/overview 200 0.678 ms
+admin-service GET /admin/overview 200 0.477 ms
+admin-service GET /admin/overview 200 0.604 ms
+admin-service GET /admin/overview 200 0.593 ms

@@ -1,0 +1,14 @@
+user-service running on 4002
+user-service GET /health 200 1.616 ms
+user-service GET /users/talent 200 1.279 ms
+user-service GET /users/talent 200 0.622 ms
+user-service GET /users/recruiters/pending 200 0.857 ms
+user-service GET /users/recruiters/pending 200 0.686 ms
+user-service GET /users/recruiters/pending 200 0.499 ms
+user-service GET /users/recruiters/pending 200 0.466 ms
+user-service PATCH /users/recruiters/usr_f49caccaa5104b44/verification 200 2.426 ms
+user-service GET /users/recruiters/pending 200 0.496 ms
+user-service GET /users/recruiters/pending 200 0.581 ms
+user-service PATCH /users/recruiters/usr_29b51264fbb4407d/verification 200 1.063 ms
+user-service GET /users/recruiters/pending 200 0.526 ms
+user-service GET /users/recruiters/pending 200 0.596 ms

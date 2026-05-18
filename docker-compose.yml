@@ -1,0 +1,60 @@
+services:
+  auth-service:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: sh -c "npm install && npm run start:auth"
+    ports:
+      - "4001:4001"
+
+  user-service:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: sh -c "npm install && npm run start:users"
+    ports:
+      - "4002:4002"
+
+  job-service:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: sh -c "npm install && npm run start:jobs"
+    ports:
+      - "4003:4003"
+
+  application-service:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: sh -c "npm install && npm run start:applications"
+    ports:
+      - "4004:4004"
+
+  admin-service:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: sh -c "npm install && npm run start:admin"
+    ports:
+      - "4005:4005"
+
+  api-gateway:
+    image: node:22-alpine
+    working_dir: /app
+    volumes:
+      - ./:/app
+    command: sh -c "npm install && npm run start:gateway"
+    ports:
+      - "4000:4000"
+    depends_on:
+      - auth-service
+      - user-service
+      - job-service
+      - application-service
+      - admin-service
