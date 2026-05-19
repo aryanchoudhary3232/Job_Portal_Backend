@@ -1,12 +1,22 @@
-import { db } from "../../../../shared/src/storage/json-store.js";
+import { prisma } from "../config/db.js";
 
-export const findUserByEmail = (email) =>
-  db.read().users.find((user) => user.email.toLowerCase() === email.toLowerCase());
+export const findUserByEmail = async (email) =>
+  prisma.user.findUnique({ where: { email: email.toLowerCase() } });
 
-export const findUserById = (id) => db.read().users.find((user) => user.id === id);
+export const findUserById = async (id) =>
+  prisma.user.findUnique({ where: { id } });
 
-export const createUser = (user) =>
-  db.update((state) => {
-    state.users.push(user);
-    return state;
-  }).users.find((entry) => entry.id === user.id);
+export const findUserByProvider = async (provider, providerId) =>
+  prisma.user.findUnique({
+    where: {
+      oauthProvider_oauthProviderId: {
+        oauthProvider: provider,
+        oauthProviderId: providerId,
+      },
+    },
+  });
+
+export const createUser = async (user) => prisma.user.create({ data: user });
+
+export const updateUser = async (id, updates) =>
+  prisma.user.update({ where: { id }, data: updates });

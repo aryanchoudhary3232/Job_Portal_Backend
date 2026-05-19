@@ -13,47 +13,32 @@ enum Role {
   STAFF
 }
 
-model User {
-  id               String            @id @default(uuid())
-  fullName         String
-  email            String            @unique
-  password         String
-  role             Role
-  isEmailVerified   Boolean  @default(false)
-  emailVerifyToken  String?
-  emailVerifyExpiry DateTime?
-  createdAt        DateTime          @default(now())
-  studentProfile   StudentProfile?
-  recruiterProfile RecruiterProfile?
-
-  @@map("users")
-}
-
-model StudentProfile {
-  id              String @id @default(uuid())
-  userId          String @unique
-  user            User   @relation(fields: [userId], references: [id])
-  collegeName     String
-  degree          String
-  resume          String
-  cgpa            Int
-}
-
-enum ApprovalStatus {
+enum VerificationStatus {
   PENDING
+  APPROVED
   REJECTED
-  ACCEPTED
 }
-model RecruiterProfile {
-  id              String         @id @default(uuid())
-  userId          String         @unique
-  user            User           @relation(fields: [userId], references: [id])
-  companyName     String
-  approvalStatus  ApprovalStatus @default(PENDING)
-  approvedBy      String?
-  approvedAt      DateTime?
-  rejectionReason String?
-  document        String
 
-  @@map("recruiter_profiles")
+model User {
+  id                 String              @id
+  fullName           String
+  email              String              @unique
+  passwordHash       String?
+  role               Role
+  headline           String?
+  location           String?
+  bio                String?
+  skills             String[]            @default([])
+  companyName        String?
+  college            String?
+  phone              String?
+  oauthProvider      String?
+  oauthProviderId    String?
+  avatarUrl          String?
+  verificationStatus VerificationStatus?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  @@unique([oauthProvider, oauthProviderId])
+  @@map("users")
 }

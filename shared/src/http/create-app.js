@@ -18,9 +18,19 @@ export const createApp = (name) => {
 export const attachErrorHandler = (app) => {
   app.use((error, _req, res, _next) => {
     const statusCode = error instanceof AppError ? error.statusCode : 500;
+    
+    // Log internal server errors
+    if (statusCode === 500) {
+      console.error("Internal Server Error:", error);
+    }
+
+    const message = error instanceof AppError 
+      ? error.message 
+      : "An unexpected error occurred. Please try again.";
+
     res.status(statusCode).json({
       success: false,
-      message: error.message || "Internal server error",
+      message,
       details: error.details,
     });
   });
