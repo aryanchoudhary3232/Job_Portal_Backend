@@ -30,15 +30,31 @@ model User {
   bio                String?
   skills             String[]            @default([])
   companyName        String?
+  companyType        String?             // Added for recruiters
+  employeeRange      String?             // Added for recruiters
   college            String?
   phone              String?
   oauthProvider      String?
   oauthProviderId    String?
   avatarUrl          String?
   verificationStatus VerificationStatus?
+  
+  isEmailVerified    Boolean             @default(false) // Added for email verification
+  emailVerificationToken String?                         // Added for email verification
+  
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
 
   @@unique([oauthProvider, oauthProviderId])
   @@map("users")
+}
+
+model OtpVerification {
+  id        String   @id @default(uuid())
+  phone     String   @unique
+  code      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+
+  @@map("otp_verifications")
 }

@@ -17,11 +17,11 @@ export const enrichHeaders = (req) => {
   let payload;
   try {
     payload = verifyToken(token);
-  } catch {
-    throw new AppError(401, "Invalid or expired token");
+    headers.set("x-user-id", String(payload.sub));
+    headers.set("x-user-role", String(payload.role));
+    headers.set("x-user-email", String(payload.email));
+  } catch (err) {
+    console.warn("[Gateway Auth] Stale or invalid bearer token supplied, ignoring:", err.message);
   }
-  headers.set("x-user-id", String(payload.sub));
-  headers.set("x-user-role", String(payload.role));
-  headers.set("x-user-email", String(payload.email));
   return headers;
 };

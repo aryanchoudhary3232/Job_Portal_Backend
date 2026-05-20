@@ -20,3 +20,6 @@ export const createUser = async (user) => prisma.user.create({ data: user });
 
 export const updateUser = async (id, updates) =>
   prisma.user.update({ where: { id }, data: updates });
+
+export const findUserByVerificationToken = async (token) =>
+  prisma.user.findFirst({ where: { emailVerificationToken: token } });

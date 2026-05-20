@@ -9,9 +9,12 @@ export const registerSchema = z.object({
   phone: z.string().optional(),
   location: z.string().optional(),
   companyName: z.string().optional(),
+  companyType: z.string().optional(),
+  employeeRange: z.string().optional(),
   college: z.string().optional(),
   bio: z.string().optional(),
   skills: z.array(z.string()).optional(),
+  isEmailVerified: z.boolean().optional(),
 });
 
 export const loginSchema = z.object({
