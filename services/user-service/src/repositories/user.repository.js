@@ -1,11 +1,9 @@
-import { db } from "../../../../shared/src/storage/json-store.js";
+import { prisma } from "../../../auth-service/src/config/db.js";
 
-export const listUsers = () => db.read().users;
+export const listUsers = async () => prisma.user.findMany();
 
-export const findUserById = (id) => listUsers().find((user) => user.id === id);
+export const findUserById = async (id) =>
+  prisma.user.findUnique({ where: { id } });
 
-export const updateUser = (id, patch) =>
-  db.update((state) => {
-    state.users = state.users.map((user) => (user.id === id ? { ...user, ...patch } : user));
-    return state;
-  }).users.find((user) => user.id === id);
+export const updateUser = async (id, patch) =>
+  prisma.user.update({ where: { id }, data: patch });

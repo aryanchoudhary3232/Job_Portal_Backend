@@ -4,13 +4,23 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "dev:gateway": "nodemon api-gateway/src/server.js",
+    "dev:auth": "nodemon services/auth-service/src/server.js",
+    "dev:users": "nodemon services/user-service/src/server.js",
+    "dev:jobs": "nodemon services/job-service/src/server.js",
+    "dev:applications": "nodemon services/application-service/src/server.js",
+    "dev:admin": "nodemon services/admin-service/src/server.js",
     "start:gateway": "node api-gateway/src/server.js",
     "start:auth": "node services/auth-service/src/server.js",
     "start:users": "node services/user-service/src/server.js",
     "start:jobs": "node services/job-service/src/server.js",
     "start:applications": "node services/application-service/src/server.js",
     "start:admin": "node services/admin-service/src/server.js",
-    "lint:loc": "node scripts/check-loc.js"
+    "lint:loc": "node scripts/check-loc.js",
+    "db:seed": "node services/auth-service/prisma/seed.js"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.4"
   },
   "dependencies": {
     "cors": "^2.8.5",

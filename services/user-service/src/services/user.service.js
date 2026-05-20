@@ -1,34 +1,53 @@
-import { roles, verificationStates } from "../../../../shared/src/domain/constants.js";
+import {
+  roles,
+  verificationStates,
+} from "../../../../shared/src/domain/constants.js";
 import { ensure } from "../../../../shared/src/http/errors.js";
-import { findUserById, listUsers, updateUser } from "../repositories/user.repository.js";
+import {
+  findUserById,
+  listUsers,
+  updateUser,
+} from "../repositories/user.repository.js";
 
-const sanitize = ({ passwordHash, ...user }) => user;
+const sanitize = ({ passwordHash, emailVerificationToken, ...user }) => user;
 
-export const getProfile = (userId) => {
-  const user = findUserById(userId);
+export const getProfile = async (userId) => {
+  const user = await findUserById(userId);
   ensure(user, 404, "User not found");
   return sanitize(user);
 };
 
-export const saveProfile = (userId, patch) => {
-  const currentUser = findUserById(userId);
+export const saveProfile = async (userId, patch) => {
+  const currentUser = await findUserById(userId);
   ensure(currentUser, 404, "User not found");
-  return sanitize(updateUser(userId, { ...currentUser, ...patch }));
+  return sanitize(await updateUser(userId, { ...patch }));
 };
 
-export const getTalentPool = (query = "") =>
-  listUsers()
+export const getTalentPool = async (query = "") => {
+  const users = await listUsers();
+  return users
     .filter((user) => user.role === roles.student)
-    .filter((user) => `${user.fullName} ${user.skills?.join(" ")}`.toLowerCase().includes(query.toLowerCase()))
+    .filter((user) =>
+      `${user.fullName} ${user.skills?.join(" ")}`
+        .toLowerCase()
+        .includes(String(query).toLowerCase()),
+    )
     .map(sanitize);
+};
 
-export const getPendingRecruiters = () =>
-  listUsers()
-    .filter((user) => user.role === roles.recruiter && user.verificationStatus === verificationStates[0])
+export const getPendingRecruiters = async () => {
+  const users = await listUsers();
+  return users
+    .filter(
+      (user) =>
+        user.role === roles.recruiter &&
+        user.verificationStatus === verificationStates[0],
+    )
     .map(sanitize);
+};
 
-export const updateRecruiterVerification = (id, status) => {
-  const user = findUserById(id);
+export const updateRecruiterVerification = async (id, status) => {
+  const user = await findUserById(id);
   ensure(user?.role === roles.recruiter, 404, "Recruiter not found");
-  return sanitize(updateUser(id, { verificationStatus: status }));
+  return sanitize(await updateUser(id, { verificationStatus: status }));
 };

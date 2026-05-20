@@ -1,17 +1,18 @@
-import { db } from "../../../../shared/src/storage/json-store.js";
+import { prisma } from "../../../auth-service/src/config/db.js";
 
-export const listJobs = () => db.read().jobs;
+export const listJobs = async (filters = {}) =>
+  prisma.job.findMany({
+    where: {
+      ...(filters.status ? { status: filters.status } : {}),
+      ...(filters.recruiterId ? { recruiterId: filters.recruiterId } : {}),
+    },
+    orderBy: { createdAt: "desc" },
+  });
 
-export const findJobById = (id) => listJobs().find((job) => job.id === id);
+export const findJobById = async (id) =>
+  prisma.job.findUnique({ where: { id } });
 
-export const createJob = (job) =>
-  db.update((state) => {
-    state.jobs.unshift(job);
-    return state;
-  }).jobs.find((entry) => entry.id === job.id);
+export const createJob = async (job) => prisma.job.create({ data: job });
 
-export const updateJob = (id, patch) =>
-  db.update((state) => {
-    state.jobs = state.jobs.map((job) => (job.id === id ? { ...job, ...patch } : job));
-    return state;
-  }).jobs.find((job) => job.id === id);
+export const updateJob = async (id, patch) =>
+  prisma.job.update({ where: { id }, data: patch });

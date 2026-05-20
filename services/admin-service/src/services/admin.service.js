@@ -1,27 +1,69 @@
-import { roles, verificationStates } from "../../../../shared/src/domain/constants.js";
-import { readPortalState } from "../repositories/admin.repository.js";
+import {
+  applicationStages,
+  roles,
+  verificationStates,
+  workModes,
+} from "../../../../shared/src/domain/constants.js";
+import { prisma } from "../../../auth-service/src/config/db.js";
 
-export const getOverview = () => {
-  const state = readPortalState();
+export const getOverview = async () => {
+  const [
+    totalStudents,
+    totalRecruiters,
+    totalJobs,
+    totalApplications,
+    pendingRecruiters,
+    totalShortlisted,
+    totalSelected,
+    totalRejected,
+  ] = await Promise.all([
+    prisma.user.count({ where: { role: roles.student } }),
+    prisma.user.count({ where: { role: roles.recruiter } }),
+    prisma.job.count(),
+    prisma.application.count(),
+    prisma.user.count({
+      where: {
+        role: roles.recruiter,
+        verificationStatus: verificationStates[0],
+      },
+    }),
+    prisma.application.count({ where: { stage: "SHORTLISTED" } }),
+    prisma.application.count({ where: { stage: "HIRED" } }),
+    prisma.application.count({ where: { stage: "REJECTED" } }),
+  ]);
+
   return {
-    totalStudents: state.users.filter((user) => user.role === roles.student).length,
-    totalRecruiters: state.users.filter((user) => user.role === roles.recruiter).length,
-    totalJobs: state.jobs.length,
-    totalApplications: state.applications.length,
-    pendingRecruiters: state.users.filter((user) => user.verificationStatus === verificationStates[0]).length,
+    totalStudents,
+    totalRecruiters,
+    totalJobs,
+    totalApplications,
+    pendingRecruiters,
+    totalShortlisted,
+    totalSelected,
+    totalRejected,
   };
 };
 
-export const getAnalytics = () => {
-  const state = readPortalState();
-  return {
-    jobsByMode: ["REMOTE", "HYBRID", "ONSITE"].map((mode) => ({
+export const getAnalytics = async () => {
+  const jobsByMode = await Promise.all(
+    workModes.map(async (mode) => ({
       label: mode,
-      value: state.jobs.filter((job) => job.workMode === mode).length,
+      value: await prisma.job.count({ where: { workMode: mode } }),
     })),
-    applicationsByStage: ["APPLIED", "SCREENING", "INTERVIEW", "OFFER", "REJECTED"].map((stage) => ({
+  );
+
+  const applicationsByStage = await Promise.all(
+    applicationStages.map(async (stage) => ({
       label: stage,
-      value: state.applications.filter((application) => application.stage === stage).length,
+      value: await prisma.application.count({ where: { stage } }),
     })),
-  };
+  );
+
+  return { jobsByMode, applicationsByStage };
 };
+
+export const listApplications = async () =>
+  prisma.application.findMany({
+    include: { job: true, student: true, recruiter: true },
+    orderBy: { appliedAt: "desc" },
+  });

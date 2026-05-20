@@ -19,6 +19,27 @@ enum VerificationStatus {
   REJECTED
 }
 
+enum WorkMode {
+  REMOTE
+  HYBRID
+  ONSITE
+}
+
+enum JobStatus {
+  DRAFT
+  PUBLISHED
+  PAUSED
+}
+
+enum ApplicationStage {
+  APPLIED
+  SHORTLISTED
+  INTERVIEW
+  OFFER
+  HIRED
+  REJECTED
+}
+
 model User {
   id                 String              @id
   fullName           String
@@ -30,23 +51,70 @@ model User {
   bio                String?
   skills             String[]            @default([])
   companyName        String?
-  companyType        String?             // Added for recruiters
-  employeeRange      String?             // Added for recruiters
+  companyType        String? // Added for recruiters
+  employeeRange      String? // Added for recruiters
   college            String?
   phone              String?
   oauthProvider      String?
   oauthProviderId    String?
   avatarUrl          String?
   verificationStatus VerificationStatus?
-  
-  isEmailVerified    Boolean             @default(false) // Added for email verification
-  emailVerificationToken String?                         // Added for email verification
-  
-  createdAt          DateTime            @default(now())
-  updatedAt          DateTime            @updatedAt
+
+  isEmailVerified        Boolean @default(false) // Added for email verification
+  emailVerificationToken String? // Added for email verification
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  recruiterJobs           Job[]         @relation("RecruiterJobs")
+  applicationsAsRecruiter Application[] @relation("RecruiterApplications")
+  applicationsAsStudent   Application[] @relation("StudentApplications")
 
   @@unique([oauthProvider, oauthProviderId])
   @@map("users")
+}
+
+model Job {
+  id          String    @id
+  recruiterId String
+  title       String
+  companyName String
+  location    String
+  workMode    WorkMode
+  type        String
+  salaryRange String
+  skills      String[]  @default([])
+  description String
+  status      JobStatus @default(PUBLISHED)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  recruiter    User          @relation("RecruiterJobs", fields: [recruiterId], references: [id])
+  applications Application[]
+
+  @@map("jobs")
+}
+
+model Application {
+  id             String           @id
+  jobId          String
+  recruiterId    String
+  studentId      String
+  stage          ApplicationStage @default(APPLIED)
+  note           String
+  resumeFileName String
+  resumeMimeType String
+  resumeData     String           @db.Text
+  details        Json?
+  appliedAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  job       Job  @relation(fields: [jobId], references: [id])
+  recruiter User @relation("RecruiterApplications", fields: [recruiterId], references: [id])
+  student   User @relation("StudentApplications", fields: [studentId], references: [id])
+
+  @@unique([jobId, studentId])
+  @@map("applications")
 }
 
 model OtpVerification {

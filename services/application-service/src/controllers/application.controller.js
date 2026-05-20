@@ -7,7 +7,35 @@ import {
   studentApplications,
 } from "../services/application.service.js";
 
-export const create = asyncHandler(async (req, res) => created(res, applyToJob(req.headers["x-user-id"], req.body), "Application submitted"));
-export const studentList = asyncHandler(async (req, res) => ok(res, studentApplications(req.headers["x-user-id"]), "Student applications"));
-export const recruiterList = asyncHandler(async (req, res) => ok(res, recruiterApplications(req.headers["x-user-id"]), "Recruiter applications"));
-export const updateStage = asyncHandler(async (req, res) => ok(res, changeApplicationStage(req.params.id, req.headers["x-user-id"], req.body.stage), "Application updated"));
+export const create = asyncHandler(async (req, res) =>
+  created(
+    res,
+    await applyToJob(req.headers["x-user-id"], req.body),
+    "Application submitted",
+  ),
+);
+export const studentList = asyncHandler(async (req, res) =>
+  ok(
+    res,
+    await studentApplications(req.headers["x-user-id"]),
+    "Student applications",
+  ),
+);
+export const recruiterList = asyncHandler(async (req, res) =>
+  ok(
+    res,
+    await recruiterApplications(req.headers["x-user-id"]),
+    "Recruiter applications",
+  ),
+);
+export const updateStage = asyncHandler(async (req, res) =>
+  ok(
+    res,
+    await changeApplicationStage(
+      req.params.id,
+      req.headers["x-user-id"],
+      req.body.stage,
+    ),
+    "Application updated",
+  ),
+);

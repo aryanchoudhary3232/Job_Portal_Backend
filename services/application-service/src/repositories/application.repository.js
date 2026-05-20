@@ -1,17 +1,29 @@
-import { db } from "../../../../shared/src/storage/json-store.js";
+import { prisma } from "../../../auth-service/src/config/db.js";
 
-export const readPortalState = () => db.read();
+export const createApplication = async (application) =>
+  prisma.application.create({ data: application });
 
-export const createApplication = (application) =>
-  db.update((state) => {
-    state.applications.unshift(application);
-    return state;
-  }).applications.find((entry) => entry.id === application.id);
+export const updateApplication = async (id, patch) =>
+  prisma.application.update({ where: { id }, data: patch });
 
-export const updateApplication = (id, patch) =>
-  db.update((state) => {
-    state.applications = state.applications.map((application) =>
-      application.id === id ? { ...application, ...patch } : application,
-    );
-    return state;
-  }).applications.find((application) => application.id === id);
+export const findApplicationById = async (id) =>
+  prisma.application.findUnique({ where: { id } });
+
+export const findApplicationByJobAndStudent = async (jobId, studentId) =>
+  prisma.application.findUnique({
+    where: { jobId_studentId: { jobId, studentId } },
+  });
+
+export const listApplicationsByStudent = async (studentId) =>
+  prisma.application.findMany({
+    where: { studentId },
+    include: { job: true, student: true },
+    orderBy: { appliedAt: "desc" },
+  });
+
+export const listApplicationsByRecruiter = async (recruiterId) =>
+  prisma.application.findMany({
+    where: { recruiterId },
+    include: { job: true, student: true },
+    orderBy: { appliedAt: "desc" },
+  });

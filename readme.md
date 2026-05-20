@@ -26,3 +26,12 @@ Microservices-backed demo job portal backend with:
    - `npm run start:applications`
    - `npm run start:admin`
    - `npm run start:gateway`
+
+## Development (nodemon)
+
+- `npm run dev:auth`
+- `npm run dev:users`
+- `npm run dev:jobs`
+- `npm run dev:applications`
+- `npm run dev:admin`
+- `npm run dev:gateway`
