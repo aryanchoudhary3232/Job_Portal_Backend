@@ -9,14 +9,14 @@ const resumeSchema = z.object({
 
 const detailsSchema = z.object({
   phone: z.string().min(10, "Phone: at least 10 digits"),
-  college: z.string().optional(),
-  degree: z.string().optional(),
-  graduationYear: z.string().optional(),
-  experience: z.string().optional(),
-  portfolioUrl: z.string().url().optional(),
-  linkedinUrl: z.string().url().optional(),
-  expectedSalary: z.string().optional(),
-  availability: z.string().optional(),
+  college: z.string().nullish(),
+  degree: z.string().nullish(),
+  graduationYear: z.string().nullish(),
+  experience: z.string().nullish(),
+  portfolioUrl: z.string().nullish(),
+  linkedinUrl: z.string().nullish(),
+  expectedSalary: z.string().nullish(),
+  availability: z.string().nullish(),
 });
 
 export const applicationSchema = z.object({
@@ -28,4 +28,5 @@ export const applicationSchema = z.object({
 
 export const stageSchema = z.object({
   stage: z.enum(applicationStages),
+  details: z.record(z.unknown()).optional().nullable(),
 });

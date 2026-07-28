@@ -35,6 +35,7 @@ export const updateStage = asyncHandler(async (req, res) =>
       req.params.id,
       req.headers["x-user-id"],
       req.body.stage,
+      req.body.details,
     ),
     "Application updated",
   ),
