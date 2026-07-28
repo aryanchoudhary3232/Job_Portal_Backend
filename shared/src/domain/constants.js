@@ -1,7 +1,8 @@
 export const roles = {
   student: "STUDENT",
   recruiter: "RECRUITER",
-  staff: "STAFF",
+  admin: "ADMIN",
+  staff: "ADMIN",
 };
 
 export const jobStates = ["DRAFT", "PUBLISHED", "PAUSED"];

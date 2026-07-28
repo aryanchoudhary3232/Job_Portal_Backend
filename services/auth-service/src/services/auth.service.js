@@ -17,6 +17,7 @@ import {
   updateUser,
 } from "../repositories/auth.repository.js";
 import { sendVerificationEmail } from "./email.service.js";
+import { prisma } from "../config/db.js";
 
 const sanitize = ({ passwordHash, emailVerificationToken, ...user }) => user;
 
@@ -103,4 +104,16 @@ export const verifyEmailOtp = async (email, code) => {
   });
 
   return sanitize(updated);
+};
+
+export const loginUserByPhone = async (phone) => {
+  const cleanPhone = (phone || "").replace(/\D/g, "");
+  ensure(cleanPhone.length >= 10, 400, "Valid 10-digit mobile number required.");
+
+  const last10 = cleanPhone.slice(-10);
+  const users = await prisma.user.findMany();
+  const user = users.find((u) => u.phone && u.phone.replace(/\D/g, "").endsWith(last10));
+
+  ensure(user, 404, "No account found with this mobile number. Please register first.");
+  return { accessToken: signToken(user), user: sanitize(user) };
 };
