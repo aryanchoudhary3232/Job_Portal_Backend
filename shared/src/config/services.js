@@ -7,10 +7,16 @@ export const ports = {
   admin: Number(process.env.ADMIN_SERVICE_PORT || 4005),
 };
 
+const resolveTarget = (envUrl, envHost, defaultPort) => {
+  if (envUrl) return envUrl.replace(/\/$/, "");
+  const host = envHost || "localhost";
+  return `http://${host}:${defaultPort}`;
+};
+
 export const serviceTargets = {
-  auth: `http://localhost:${ports.auth}`,
-  users: `http://localhost:${ports.users}`,
-  jobs: `http://localhost:${ports.jobs}`,
-  applications: `http://localhost:${ports.applications}`,
-  admin: `http://localhost:${ports.admin}`,
+  auth: resolveTarget(process.env.AUTH_SERVICE_URL, process.env.AUTH_SERVICE_HOST, ports.auth),
+  users: resolveTarget(process.env.USER_SERVICE_URL, process.env.USER_SERVICE_HOST, ports.users),
+  jobs: resolveTarget(process.env.JOB_SERVICE_URL, process.env.JOB_SERVICE_HOST, ports.jobs),
+  applications: resolveTarget(process.env.APPLICATION_SERVICE_URL, process.env.APPLICATION_SERVICE_HOST, ports.applications),
+  admin: resolveTarget(process.env.ADMIN_SERVICE_URL, process.env.ADMIN_SERVICE_HOST, ports.admin),
 };

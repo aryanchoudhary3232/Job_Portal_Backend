@@ -1,0 +1,57 @@
+name: Backend CI & Validation Pipeline
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate-and-build:
+    name: Install, Lint, Prisma Validation & Docker Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'npm'
+
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Run LOC & Style Check
+        run: npm run lint:loc
+
+      - name: Validate Prisma Schema
+        run: npx prisma validate --schema=services/auth-service/prisma/schema.prisma
+
+      - name: Generate Prisma Client
+        run: npm run prisma:generate
+
+      - name: Verify Docker Image Build
+        run: docker build -t jobportal-backend:test .
+
+  deploy-ec2:
+    name: Auto Deploy to AWS EC2
+    needs: validate-and-build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main' && env.CAN_DEPLOY == 'true'
+    env:
+      CAN_DEPLOY: ${{ secrets.EC2_HOST != '' && secrets.EC2_SSH_KEY != '' }}
+    steps:
+      - name: Deploy to EC2 via SSH
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd ~/job_portal
+            git -C Job_Portal_Backend pull origin main
+            sudo docker compose -f docker-compose.prod.yml build auth-service
+            sudo docker compose -f docker-compose.prod.yml up -d
