@@ -40,9 +40,7 @@ jobs:
     name: Auto Deploy to AWS EC2
     needs: validate-and-build
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main' && env.CAN_DEPLOY == 'true'
-    env:
-      CAN_DEPLOY: ${{ secrets.EC2_HOST != '' && secrets.EC2_SSH_KEY != '' }}
+    if: github.ref == 'refs/heads/main'
     steps:
       - name: Deploy to EC2 via SSH
         uses: appleboy/ssh-action@v1.0.3
