@@ -10,6 +10,8 @@ jobs:
   validate-and-build:
     name: Install, Lint, Prisma Validation & Docker Build
     runs-on: ubuntu-latest
+    env:
+      DATABASE_URL: "postgresql://ci_dummy:ci_dummy@localhost:5432/ci_dummy?schema=public"
 
     steps:
       - name: Checkout Source Code

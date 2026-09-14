@@ -10,7 +10,8 @@ RUN npm install
 # Copy application code
 COPY . .
 
-# Generate Prisma client for Postgres
+# Generate Prisma client for Postgres (placeholder env for build-time validation)
+ENV DATABASE_URL="postgresql://build_placeholder:build_placeholder@localhost:5432/placeholder?schema=public"
 RUN npx prisma generate --schema=services/auth-service/prisma/schema.prisma
 
 # Expose ports for all services
